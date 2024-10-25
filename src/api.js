@@ -45,16 +45,20 @@ export const updateCharacter = async (id, updateData) => {
 export const updateCharacterAvatar = async (id, avatarFile) => {
   try {
     const formData = new FormData();
-    formData.append("avatar", avatarFile);
-    const response = await axios.post(`${char}/${id}/avatar`, formData, {
+    formData.append("avatar", avatarFile); // Передаем файл напрямую
+
+    const response = await axios.patch(`${char}/${id}/avatar`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-    return response.data.data.avatar;
+
+    return response.data; // Убедитесь, что структура ответа корректна
   } catch (err) {
     console.error("Failed to update avatar:", err);
-    throw new Error(err);
+    throw new Error(err.response?.data?.message || "Failed to update avatar");
   }
 };
+
+
 
 export const removeCharacterAvatar = async (id) => {
   try {
