@@ -49,7 +49,7 @@ export const updateCharacterAvatar = async (id, avatarFile) => {
     const response = await axios.post(`${char}/${id}/avatar`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-    return response.data.data;
+    return response.data.data.avatar;
   } catch (err) {
     console.error("Failed to update avatar:", err);
     throw new Error(err);
