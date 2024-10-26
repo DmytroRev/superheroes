@@ -42,21 +42,30 @@ export const updateCharacter = async (id, updateData) => {
     throw new Error(err);
   }
 };
+
 export const updateCharacterAvatar = async (id, avatarFile) => {
   try {
     const formData = new FormData();
-    formData.append("avatar", avatarFile); // Передаем файл напрямую
+    formData.append("avatar", avatarFile);
 
     const response = await axios.patch(`${char}/${id}/avatar`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
 
-    return response.data; // Убедитесь, что структура ответа корректна
+    console.log("Server response:", response); // Выводим весь ответ в консоль
+
+    if (response.data && response.data.avatarUrl) {
+      return response.data;
+    } else {
+      console.error("Avatar URL not found in response:", response);
+      throw new Error("Avatar URL not found in response.");
+    }
   } catch (err) {
     console.error("Failed to update avatar:", err);
-    throw new Error(err.response?.data?.message || "Failed to update avatar");
+    throw new Error(err.response?.data?.message || "Failed to update avatar.");
   }
 };
+
 
 
 

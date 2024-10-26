@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { deleteCharacter, getCharacterById, updateCharacterAvatar } from "../../api";
+import { useEffect, useRef, useState } from "react";
 
 const CharacterDetails = () => {
   const { id } = useParams();
@@ -11,17 +11,20 @@ const CharacterDetails = () => {
   const [isLoading, setIsLoading] = useState(false);
   const backToPage = useRef(location.state ?? '/character');
 
+  // Объявление fetchCharacter
+  const fetchCharacter = async () => {
+    try {
+      const data = await getCharacterById(id);
+      setCharacter(data); // Обновляем состояние персонажа
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+  
   useEffect(() => {
-    const fetchCharacter = async () => {
-      try {
-        const data = await getCharacterById(id);
-        setCharacter(data);
-      } catch (err) {
-        setError(err.message);
-      }
-    };
     fetchCharacter();
-  }, [id]);
+  }, [id]); // Зависимость по ID персонажа
+  
 
   const handleDeleteAvatar = async () => {
     try {
@@ -41,33 +44,30 @@ const CharacterDetails = () => {
   };
 
   const handleSaveAvatar = async () => {
-    if (newAvatar) {
-      try {
-        setIsLoading(true);
-        
-        // Проверка, что avatarFile действительно файл
-        if (!(newAvatar instanceof File)) {
-          throw new Error("Не выбран файл аватара");
-        }
+  if (newAvatar) {
+    try {
+      setIsLoading(true);
+      const updatedAvatarUrl = await updateCharacterAvatar(id, newAvatar);
 
-        const updatedCharacter = await updateCharacterAvatar(id, newAvatar);
-        
-        // Предполагается, что сервер возвращает обновленного персонажа
-        if (updatedCharacter && updatedCharacter.character) {
-          setCharacter(updatedCharacter.character);
-        } else {
-          throw new Error('Не удалось получить обновленные данные персонажа');
-        }
-      } catch (err) {
-        console.error('Error updating avatar:', err);
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
+      if (updatedAvatarUrl) {
+        setCharacter(prevCharacter => ({
+          ...prevCharacter,
+          avatarUrl: updatedAvatarUrl,
+        }));
+        setPhotoPreview(null);
+      } else {
+        console.error("Avatar URL is missing in the server response.");
       }
-    } else {
-      console.warn('No new avatar selected');
+    } catch (err) {
+      console.error("Error updating avatar:", err.message || err);
+      setError(err.message || "Failed to update avatar.");
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }
+};
+
+  
 
   if (error) return <div>Error: {error}</div>;
   if (!character) return <div>Loading...</div>;
@@ -112,3 +112,4 @@ const CharacterDetails = () => {
 };
 
 export default CharacterDetails;
+
