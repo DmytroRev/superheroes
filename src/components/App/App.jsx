@@ -3,7 +3,7 @@ import CharacterList from "../CharacterList/CharacterList";
 import "./App.css";
 import CharacterDetails from "../CharacterDetails/CharacterDetails";
 import { Suspense } from "react";
-import { Home } from "../Home/Home";
+import Home from "../Home/Home";
 
 function App() {
   return (
