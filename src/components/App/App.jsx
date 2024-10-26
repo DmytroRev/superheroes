@@ -5,7 +5,7 @@ import CharacterDetails from "../CharacterDetails/CharacterDetails";
 import { Suspense } from "react";
 import Home from "../Home/Home";
 
-function App() {
+export default function App() {
   return (
     <>
       <Suspense fallback={<div>Loading...</div>}>
@@ -22,4 +22,3 @@ function App() {
   );
 }
 
-export default App;
